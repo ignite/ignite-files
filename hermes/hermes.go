@@ -28,26 +28,27 @@ const (
 	FlagShowCounterparty = "show-counterparty"
 	FlagChain            = "chain"
 )
+
 const (
-	// CommandCreate is the Hermes create command
+	// CommandCreate is the Hermes create command.
 	CommandCreate CommandName = "create"
 
-	// CommandQuery is the Hermes query command
+	// CommandQuery is the Hermes query command.
 	CommandQuery CommandName = "query"
 
-	// CommandStart is the Hermes start command
+	// CommandStart is the Hermes start command.
 	CommandStart CommandName = "start"
 
-	// CommandClient is the Hermes client command
+	// CommandClient is the Hermes client command.
 	CommandClient CreateCommand = "client"
 
-	// CommandConnection is the Hermes connection command
+	// CommandConnection is the Hermes connection command.
 	CommandConnection CreateCommand = "connection"
 
-	// CommandChannel is the Hermes channel command
+	// CommandChannel is the Hermes channel command.
 	CommandChannel CreateCommand = "channel"
 
-	// CommandChannels  is the Hermes channels command
+	// CommandChannels  is the Hermes channels command.
 	CommandChannels QueryCommand = "channels"
 )
 
@@ -74,7 +75,7 @@ type (
 	}
 )
 
-// WithFlags assigns the command flags
+// WithFlags assigns the command flags.
 func WithFlags(flags map[string]string) Option {
 	return func(c *configs) {
 		c.flags = flags
@@ -119,21 +120,21 @@ func (h *Hermes) Cleanup() error {
 	return os.RemoveAll(h.path)
 }
 
-//hermes create client --host-chain ibc-1 --reference-chain ibc-0
-//hermes create client --host-chain ibc-0 --reference-chain ibc-1
-//hermes create connection --a-chain ibc-0 --a-client 07-tendermint-0 --b-client 07-tendermint-0
-//hermes create channel --a-chain ibc-0 --a-connection connection-0 --a-port transfer --b-port transfer
-//hermes query channels --show-counterparty --chain ibc-0
-//hermes start
-//hermes tx ft-transfer --timeout-seconds 1000 --dst-chain ibc-1 --src-chain ibc-0 --src-port transfer --src-channel channel-0 --amount 100000
-//hermes tx ft-transfer --timeout-seconds 10000 --denom ibc/C1840BD16FCFA8F421DAA0DAAB08B9C323FC7685D0D7951DC37B3F9ECB08A199 --dst-chain ibc-0 --src-chain ibc-1 --src-port transfer --src-channel channel-0 --amount 100000
+// hermes create client --host-chain ibc-1 --reference-chain ibc-0
+// hermes create client --host-chain ibc-0 --reference-chain ibc-1
+// hermes create connection --a-chain ibc-0 --a-client 07-tendermint-0 --b-client 07-tendermint-0
+// hermes create channel --a-chain ibc-0 --a-connection connection-0 --a-port transfer --b-port transfer
+// hermes query channels --show-counterparty --chain ibc-0
+// hermes start
+// hermes tx ft-transfer --timeout-seconds 1000 --dst-chain ibc-1 --src-chain ibc-0 --src-port transfer --src-channel channel-0 --amount 100000
+// hermes tx ft-transfer --timeout-seconds 10000 --denom ibc/C1840BD16FCFA8F421DAA0DAAB08B9C323FC7685D0D7951DC37B3F9ECB08A199 --dst-chain ibc-0 --src-chain ibc-1 --src-port transfer --src-channel channel-0 --amount 100000
 
-func (h *Hermes) Query(ctx context.Context, cmd CreateCommand, options ...Option) error {
-	return h.RunCmd(ctx, CommandQuery, string(cmd), options...)
+func (h *Hermes) Create(ctx context.Context, cmd CreateCommand, options ...Option) error {
+	return h.RunCmd(ctx, CommandCreate, string(cmd), options...)
 }
 
-func (h *Hermes) Create(ctx context.Context, cmd QueryCommand, options ...Option) error {
-	return h.RunCmd(ctx, CommandCreate, string(cmd), options...)
+func (h *Hermes) Query(ctx context.Context, cmd QueryCommand, options ...Option) error {
+	return h.RunCmd(ctx, CommandQuery, string(cmd), options...)
 }
 
 func (h *Hermes) RunCmd(ctx context.Context, command CommandName, subCommand string, options ...Option) error {
