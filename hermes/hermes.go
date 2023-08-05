@@ -53,6 +53,8 @@ const (
 )
 
 type (
+	// Flags represents the Hermes run flags.
+	Flags map[string]interface{}
 	// CommandName represents a high level command under Hermes.
 	CommandName string
 	// QueryCommand represents the query command under Hermes.
@@ -71,12 +73,12 @@ type (
 
 	// Configs holds Generate configs.
 	configs struct {
-		flags map[string]interface{}
+		flags Flags
 	}
 )
 
 // WithFlags assigns the command flags.
-func WithFlags(flags map[string]interface{}) Option {
+func WithFlags(flags Flags) Option {
 	return func(c *configs) {
 		c.flags = flags
 	}
@@ -143,7 +145,7 @@ func (h *Hermes) RunCmd(ctx context.Context, command CommandName, subCommand str
 		cmd = append(cmd, subCommand)
 	}
 	for flag, value := range c.flags {
-		if _, ok := value.(bool); ok {
+		if v, ok := value.(bool); ok && v {
 			cmd = append(cmd, fmt.Sprintf("--%s", flag))
 		} else {
 			cmd = append(cmd, fmt.Sprintf("--%s=%s", flag, value))
@@ -151,5 +153,5 @@ func (h *Hermes) RunCmd(ctx context.Context, command CommandName, subCommand str
 	}
 
 	// execute the command.
-	return exec.Exec(ctx, cmd, exec.IncludeStdLogsToError())
+	return exec.Exec(ctx, cmd)
 }
