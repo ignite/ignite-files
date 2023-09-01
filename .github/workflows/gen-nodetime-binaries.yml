@@ -1,9 +1,14 @@
-name: Generate embedded binaries
+name: Generate nodetime binaries
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'nodetime/*.go'
+      - 'scripts/gen-nodetime'
+      - 'scripts/data/gen-nodetime/**'
+      - '!scripts/data/gen-nodetime/tsconfig.json'
 
 jobs:
   gen-nodetime:
