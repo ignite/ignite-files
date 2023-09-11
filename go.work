@@ -6,4 +6,5 @@ use (
 	./gex
 	./hermes
 	./nodetime
+	./protoc
 )
