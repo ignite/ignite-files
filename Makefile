@@ -46,4 +46,4 @@ help: Makefile
 
 .PHONY: help
 
-.DEFAULT_GOAL := install
+.DEFAULT_GOAL := test

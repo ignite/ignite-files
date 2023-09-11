@@ -1,4 +1,8 @@
-go 1.21.0
+go 1.21
 
-use ./gex
-use ./protoc
+use (
+	./hermes
+	./nodetime
+	./gex
+	./protoc
+)
