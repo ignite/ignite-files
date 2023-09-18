@@ -58,3 +58,4 @@ jobs:
           commit-message: "feat(protoc): update binaries ${{ matrix.runner.os }}-${{ matrix.runner.arch }}"
           body: ""
           branch: feat/gen-protoc-${{ matrix.runner.os }}-${{ matrix.runner.arch }}
+          delete-branch: true

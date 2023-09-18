@@ -43,3 +43,4 @@ jobs:
           commit-message: "feat(nodetime): update binaries"
           body: ""
           branch: feat/gen-nodetime
+          delete-branch: true
