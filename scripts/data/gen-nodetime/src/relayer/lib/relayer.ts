@@ -2,13 +2,12 @@
 import {fromHex} from "@cosmjs/encoding";
 import {DirectSecp256k1Wallet} from "@cosmjs/proto-signing";
 import {GasPrice} from "@cosmjs/stargate";
-
 import {Endpoint, IbcClient, Link} from "@confio/relayer/build";
-import {buildCreateClientArgs, prepareConnectionHandshake} from "@confio/relayer/build/lib/ibcclient";
-import {orderFromJSON} from "@confio/relayer/build/codec/ibc/core/channel/v1/channel";
+import {buildCreateClientArgs, IbcClientOptions, prepareConnectionHandshake} from "@confio/relayer/build/lib/ibcclient";
+import {orderFromJSON} from "cosmjs-types/ibc/core/channel/v1/channel";
 
 // local imports.
-import ConsoleLogger from './logger';
+import ConsoleLogger, { LogLevels } from './logger';
 
 type Chain = {
     id: string;
@@ -17,6 +16,8 @@ type Chain = {
     rpc_address: string;
     gas_price: string;
     client_id: string;
+    estimated_block_time: number;
+    estimated_indexer_time: number;
 };
 
 type Path = {
@@ -36,9 +37,16 @@ type PathEnd = {
     ack_height?: number;
 };
 
+const defaultEstimatedBlockTime = 400;
+const defaultEstimatedIndexerTime = 80;
+
 export default class Relayer {
     private defaultMaxAge = 86400;
+    private logLevel = 2;
 
+    constructor(logLevel: LogLevels=LogLevels.INFO) {
+        if (logLevel) this.logLevel=logLevel;
+    }
     public async link([
                           path,
                           srcChain,
@@ -48,7 +56,7 @@ export default class Relayer {
                       ]: [Path, Chain, Chain, string, string]): Promise<Path> {
         const srcClient = await Relayer.getIBCClient(srcChain, srcKey);
         const dstClient = await Relayer.getIBCClient(dstChain, dstKey);
-        const link = await Relayer.create(srcClient, dstClient, srcChain.client_id, dstChain.client_id);
+        const link = await Relayer.create(srcClient, dstClient, srcChain.client_id, dstChain.client_id, this.logLevel);
 
         const channels = await link.createChannel(
             'A',
@@ -65,7 +73,7 @@ export default class Relayer {
 
         return path;
     }
-
+    
     public async start([
                            path,
                            srcChain,
@@ -81,7 +89,7 @@ export default class Relayer {
             dstClient,
             path.src.connection_id,
             path.dst.connection_id,
-            new ConsoleLogger()
+            new ConsoleLogger(this.logLevel)
         );
 
         const heights = await link.checkAndRelayPacketsAndAcks(
@@ -111,15 +119,17 @@ export default class Relayer {
         const signer = await DirectSecp256k1Wallet.fromKey(fromHex(key), chain.address_prefix);
 
         const [account] = await signer.getAccounts();
+        const options: IbcClientOptions = {
+            gasPrice: chainGP,
+            estimatedBlockTime: chain.estimated_block_time ?? defaultEstimatedBlockTime,
+            estimatedIndexerTime: chain.estimated_indexer_time ?? defaultEstimatedIndexerTime
+        }
 
         return await IbcClient.connectWithSigner(
             chain.rpc_address,
             signer,
             account.address,
-            {
-                prefix: chain.address_prefix,
-                gasPrice: chainGP
-            }
+            options
         );
     }
 
@@ -127,7 +137,8 @@ export default class Relayer {
         nodeA: IbcClient,
         nodeB: IbcClient,
         clientA: string,
-        clientB: string
+        clientB: string,
+        logLevel:number
     ): Promise<Link> {
         let dstClientID = clientB;
         if (!clientB) {
@@ -193,6 +204,6 @@ export default class Relayer {
         const endA = new Endpoint(nodeA, srcClientID, connIdA);
         const endB = new Endpoint(nodeB, dstClientID, connIdB);
 
-        return new Link(endA, endB, new ConsoleLogger());
+        return new Link(endA, endB, new ConsoleLogger(logLevel));
     }
 }
