@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# This script builds Gex for multiple platforms and creates a tarball for each platform.
+# It clones the Gex repository, checks out the specified version, and builds the binary for each platform.
+# The resulting tarballs are saved in the gex directory.
+
+set -e
+
+GIT_REPOSITORY="https://github.com/cosmos/gex.git"
+GOROOT=$(go env GOROOT)
+WORKDIR=$(pwd)
+PLATFORMS="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64"
+
+# Cleans up temporary files and directories
+clean_up() {
+    test -d "$tmp_dir" && rm -fr "$tmp_dir"
+}
+
+# Creates a temporary directory and sets up a trap to clean it up on exit
+tmp_dir=$(mktemp -d -t gex.XXXXXX)
+trap "clean_up $tmp_dir" EXIT
+
+# Clones the Gex repository into the temporary directory and checkout the latest version
+git clone --quiet ${GIT_REPOSITORY} ${tmp_dir}
+cd ${tmp_dir}
+version=$(git tag --list --sort=version:refname 'v*' | tail -1)
+git checkout --quiet ${version}
+echo "Latest Version: ${version}"
+
+# Builds Gex for each platform and creates a tarball for each one
+for platform in ${PLATFORMS}
+do
+        goos=${platform%/*}
+        goarch=${platform#*/}
+
+        GOOS=$goos GOARCH=$goarch go build -o gex-${goarch}-${goos} 2>&1
+
+        # The sorting, owner, group and mtime is to ensure md5 equality of the tar output
+        # From: https://stackoverflow.com/questions/32997526/how-to-create-a-tar-file-that-omits-timestamps-for-its-contents
+        # piping into gzip with --no-name is to ensure md5 equality of the compressed tar ball (if not you get different hash every time).
+        # From: https://stackoverflow.com/questions/36464358/why-do-the-md5-hashes-of-two-tarballs-of-the-same-file-differ
+        TZ=UTC0 tar --sort=name --owner=root:0 --group=root:0 --mtime='2019-01-01 00:00:00' -cvf - gex-${goarch}-${goos} | gzip --no-name > gex-${goarch}-${goos}.tar.gz
+done
+
+# Moves the tarballs to the gex directory
+mv gex-*.tar.gz ${WORKDIR}/gex
