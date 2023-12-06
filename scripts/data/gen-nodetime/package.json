@@ -7,7 +7,7 @@
 		"build": "pkg --public-packages \"*\" --public --no-bytecode -c package.json -o nodetime nodetime"
 	},
 	"dependencies": {
-		"@confio/relayer": "0.11.1",
+		"@confio/relayer": "0.11.2",
 		"@cosmjs/crypto": "^0.32.1",
 		"@cosmjs/encoding": "^0.32.1",
 		"@cosmjs/proto-signing": "^0.32.1",
