@@ -1,0 +1,29 @@
+name: Generate Hermes binaries
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'hermes/*.go'
+      - 'scripts/gen-hermes'
+
+jobs:
+  gen-hermes:
+    name: "Generate hermes binaries"
+    runs-on: ubuntu-latest
+    concurrency: gen-hermes
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: ./scripts/gen-hermes
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "feat(hermes): update binaries"
+          commit-message: "feat(hermes): update binaries"
+          body: ""
+          branch: feat/gen-hermes
+          delete-branch: true

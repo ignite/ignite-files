@@ -1,4 +1,4 @@
-name: Generate nodetime binaries
+name: Generate GEX binaries
 
 on:
   push:
