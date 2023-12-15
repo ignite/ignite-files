@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Define the repository URL and the folder where you want to save the binaries
+LAST_RELEASE_API="https://api.github.com/repos/informalsystems/hermes/releases/latest"
+REPO_URL="https://github.com/informalsystems/hermes"
+DEST_FOLDER="hermes"
+
+# Get the latest release version from GitHub API
+RELEASE_INFO=$(curl -s -L "$LAST_RELEASE_API")
+LATEST_TAG=$(echo "$RELEASE_INFO" | grep -o '"tag_name": "[^"]*' | grep -o '[^"]*$')
+echo "Download Hermes $LATEST_TAG binaries"
+
+# Loop through each platform and download the corresponding binary
+PLATFORMS=("aarch64-apple-darwin" "aarch64-unknown-linux-gnu" "x86_64-apple-darwin" "x86_64-unknown-linux-gnu")
+for PLATFORM in "${PLATFORMS[@]}"; do
+  BINARY_NAME="hermes-$LATEST_TAG-$PLATFORM.tar.gz"
+  DOWNLOAD_URL="$REPO_URL/releases/download/$LATEST_TAG/$BINARY_NAME"
+  NEW_BINARY_NAME="hermes-$PLATFORM.tar.gz"
+  DEST_FILE="$DEST_FOLDER/$NEW_BINARY_NAME"
+
+  # Download the binary
+  echo "Downloading $BINARY_NAME..."
+  curl -sL "$DOWNLOAD_URL" -o "$DEST_FILE"
+
+  # Check if the download was successful
+  if [ $? -eq 0 ]; then
+    echo "Downloaded $BINARY_NAME to $DEST_FILE"
+  else
+    echo "Failed to download $BINARY_NAME"
+  fi
+done
+
+echo "All binaries downloaded to $DEST_FOLDER"
