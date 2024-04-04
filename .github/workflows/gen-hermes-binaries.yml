@@ -1,12 +1,8 @@
 name: Generate Hermes binaries
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'hermes/*.go'
-      - 'scripts/gen-hermes'
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
 
 jobs:
   gen-hermes:
