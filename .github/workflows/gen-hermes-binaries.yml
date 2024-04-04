@@ -20,6 +20,9 @@ jobs:
         with:
           title: "feat(hermes): update binaries"
           commit-message: "feat(hermes): update binaries"
-          body: "After merging this PR, create a release tag based on this pattern: `hermes/<HERMES-BINARY-VERSION>` (Eg: `hermes/v1.8.2`)."
+          body: |
+            ### DISCLAIMER
+            **After merging this PR, create a release tag based on the Hermes binary version using this pattern: `hermes/<HERMES-BINARY-VERSION>`.**
+            _Eg: `hermes/v1.8.2`_
           branch: feat/gen-hermes
           delete-branch: true
