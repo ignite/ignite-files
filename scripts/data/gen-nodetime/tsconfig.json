@@ -1,8 +1,4 @@
 {
-    "compilerOptions": {
-      "outDir": "./dist/relayer",
-      "esModuleInterop": true
-    },
-    "include": ["src/relayer/**/*"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
