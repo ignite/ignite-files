@@ -3,7 +3,6 @@ go 1.21.1
 toolchain go1.21.1
 
 use (
-	./gex
 	./hermes
 	./nodetime
 	./protoc
