@@ -1,12 +1,8 @@
 name: Generate Hermes binaries
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'hermes/*.go'
-      - 'scripts/gen-hermes'
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
 
 jobs:
   gen-hermes:
@@ -24,6 +20,9 @@ jobs:
         with:
           title: "feat(hermes): update binaries"
           commit-message: "feat(hermes): update binaries"
-          body: ""
+          body: |
+            ### DISCLAIMER
+            **After merging this PR, create a release tag based on the Hermes binary version using this pattern: `hermes/<HERMES-BINARY-VERSION>`.**
+            _Eg: `hermes/v1.8.2`_
           branch: feat/gen-hermes
           delete-branch: true
