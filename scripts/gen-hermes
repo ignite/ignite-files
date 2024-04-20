@@ -8,7 +8,23 @@ DEST_FOLDER="hermes"
 # Get the latest release version from GitHub API
 RELEASE_INFO=$(curl -s -L "$LAST_RELEASE_API")
 LATEST_TAG=$(echo "$RELEASE_INFO" | grep -o '"tag_name": "[^"]*' | grep -o '[^"]*$')
-echo "Download Hermes $LATEST_TAG binaries"
+
+# Get the latest hermes binary version from the ignite-files repo tag
+HERMES_TAG=$(git ls-remote 2>/dev/null | grep -o 'hermes/v[0-9.]*$' | cut -c 8- | tail -n 1)
+
+echo "Latest Hermes Release: $LATEST_TAG"
+echo "Current Hermes Binary: $HERMES_TAG"
+
+# Function to compare versions
+version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+
+# Check if there's a new release
+if version_gt "$LATEST_TAG" "$HERMES_TAG"; then
+    echo "A new release ($LATEST_TAG) is available. Downloading binaries..."
+else
+    echo "No new release found."
+    exit 0
+fi
 
 # Loop through each platform and download the corresponding binary
 PLATFORMS=("aarch64-apple-darwin" "aarch64-unknown-linux-gnu" "x86_64-apple-darwin" "x86_64-unknown-linux-gnu")
