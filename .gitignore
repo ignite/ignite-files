@@ -1,10 +1,8 @@
-scripts/**/nodetime-*
-dist/
-node_modules
-.DS_Store
-apps/
 .idea
-.vscode
-docs/.vuepress/dist
+dist/
+apps/
 build/
+**/node_modules/
+.DS_Store
+.vscode
 *coverage.*
