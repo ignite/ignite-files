@@ -21,6 +21,8 @@ jobs:
           title: "feat(hermes): update binaries"
           commit-message: "feat(hermes): update binaries"
           body: |
+            ## DESCRIPTION
+            [New Hermes Release](https://github.com/informalsystems/hermes/releases/latest)
             ### DISCLAIMER
             **After merging this PR, create a release tag based on the Hermes binary version using this pattern: `hermes/<HERMES-BINARY-VERSION>`.**
             _Eg: `hermes/v1.8.2`_
