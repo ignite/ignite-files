@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: gen-hermes
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - run: ./scripts/gen-hermes
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v7
         with:
           title: "feat(hermes): update binaries"
           commit-message: "feat(hermes): update binaries"
@@ -25,6 +27,7 @@ jobs:
             [New Hermes Release](https://github.com/informalsystems/hermes/releases/latest)
             ### DISCLAIMER
             **After merging this PR, create a release tag based on the Hermes binary version using this pattern: `hermes/<HERMES-BINARY-VERSION>`.**
-            _Eg: `hermes/v1.8.2`_
+            _Eg: `hermes/v1.12.0`_
           branch: feat/gen-hermes
           delete-branch: true
+          signoff: true
