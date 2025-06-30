@@ -1,5 +1,9 @@
 ## Static files for ignite
 
+> [!warning]
+> This repository is deprecated. Ignite does not use pre-built static files anymore.
+> Ignite Apps are directly handling their dependencies and Ignite CLI replaced node by go templates for easier maintenance and performance.
+
 This repository is used to store large binary files separately from the main project repository to keep it clean and
 manageable.
 
